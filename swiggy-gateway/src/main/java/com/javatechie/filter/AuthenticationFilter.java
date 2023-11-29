@@ -1,12 +1,13 @@
 package com.javatechie.filter;
 
 import com.javatechie.util.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
@@ -15,9 +16,11 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     private RouteValidator validator;
 
     //    @Autowired
-//    private RestTemplate template;
+    //    private RestTemplate template;
     @Autowired
     private JwtUtil jwtUtil;
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
     public AuthenticationFilter() {
         super(Config.class);
@@ -27,7 +30,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
             if (validator.isSecured.test(exchange.getRequest())) {
-                //header contains token or not
+                // header contains token or not
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
                     throw new RuntimeException("missing authorization header");
                 }
@@ -37,12 +40,12 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     authHeader = authHeader.substring(7);
                 }
                 try {
-//                    //REST call to AUTH service
-//                    template.getForObject("http://IDENTITY-SERVICE//validate?token" + authHeader, String.class);
+                    // REST call to AUTH service
+                    // template.getForObject("http://IDENTITY-SERVICE//validate?token" + authHeader, String.class);
                     jwtUtil.validateToken(authHeader);
 
                 } catch (Exception e) {
-                    System.out.println("invalid access...!");
+                    logger.info("invalid access...!");
                     throw new RuntimeException("un authorized access to application");
                 }
             }

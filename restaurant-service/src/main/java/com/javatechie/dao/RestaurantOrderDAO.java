@@ -22,10 +22,4 @@ public class RestaurantOrderDAO {
         orderMap.put("37jbd832", new OrderResponseDTO("37jbd832", "PANEER BUTTER MASALA", 1, 325, new Date(), "DELIVERED", 0));
         return orderMap;
     }
-
-    public static void main(String[] args) {
-        System.out.println("hyderabadi dum biryani".toUpperCase());
-    }
-
-
 }
